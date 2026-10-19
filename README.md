@@ -1,99 +1,94 @@
-# Hytale Example Plugin
+# Hytale Plugin Template
 
-An example project that can build and run plugins for the game Hytale!
+An example project and template for making mods and plugins for Hytale using Gradle and the Smolder plugin.
 
-> **⚠️ Warning: Early Access**    
-> The game Hytale is in early access, and so is this project! Features may be
-> incomplete, unstable, or change frequently. Please be patient and understanding as development
-> continues.
+> **⚠️ Note: Early Access**  
+> Hytale and its modding ecosystem are in active development. Features may evolve as new game builds and tooling versions are released.
 
-## Introduction
-This project contains a Gradle project that can be imported into IDEA and used
-as the foundation for custom Hytale plugins. The template will add the Hytale
-server to your classpath and create a run configuration that can be used to
-run your plugin on the server. It can also be used to build a sharable JAR file
-that contains your plugin.
+---
 
-## Requirements
-Please ensure all the requirements are met before getting started.
+## 🚀 Getting Started / Requirements
 
-1. Download Hytale using the official launcher.
-2. Have Intellij IDEA installed. Community edition is fine.
-3. Download Java 25 and set it as the SDK in IDEA.
+1. **Java 25** (JDK 25) installed and configured in your environment.
+2. **Hytale** installed via the official launcher.
+3. **IntelliJ IDEA** or your preferred IDE.
 
-## Configuring Template
-It is important to configure the project before using it as a template. Doing
-this before importing the project will help avoid running into caching issues
-later on.
+---
 
-### 1: Project Name
-Set the name of the project in `settings.gradle`. This should be the name of
-your plugin. We recommend capitalizing your project name and avoiding 
-whitespace and most special characters. This will be used as the base name for
-any files produced by Gradle, like the sharable JAR file.
+## ⚙️ Configuring Your Project
 
-### 2: Gradle Properties
-Review the properties defined in `gradle.properties`. You should change the 
-`maven_group` to match your project. You should also change the `version`
-property before making a new release, or set up CI/CD to automate it.
+To customize this template for your own plugin:
 
-### 3: Manifest
-The manifest file provides important information about your plugin to Hytale.
-You should update every property in this file to reflect your project. The 
-most important property to set is `Main` which tells the game which class
-file to load as the entry point for your plugin. The file can be found at 
-`src/main/resources/manifest.json`.
+### 1. Project Name
+Open [`settings.gradle.kts`](file:///f:/Github/Style-Core/settings.gradle.kts) and set `rootProject.name` to your plugin name (e.g. `MyPlugin`). This controls the generated jar name.
 
-**This template has configured Gradle to automatically update the `Version` and
-`IncludesAssetPack` property to reflect your Gradle properties every time you 
-run the game in development, or build the plugin. This is a workaround to allow
-the in-game asset editor to be used when working on your project.**
+### 2. Plugin Properties
+Open [`gradle.properties`](file:///f:/Github/Style-Core/gradle.properties) and update the metadata:
+- `maven_group`: your package namespace (e.g. `com.example.myplugin`)
+- `plugin_group`: plugin group identifier for Hytale manifest
+- `plugin_name`: display name of your plugin
+- `plugin_author`: author name
+- `plugin_website`: project URL
+- `plugin_main`: fully qualified main class path (e.g. `com.example.myplugin.MyPlugin`)
+- `version`: version of your plugin
 
-## Importing into IDEA
-When opening the project in IDEA it should automatically create the
-`HytaleServer` run configuration and a `./run` folder. When you run the game it
-will generate all the relevant files in there. It will also load the default 
-assets from the games.
+### 3. Java Package & Code
+Rename `src/main/java/org/example/plugin` to match your package and update your plugin entrypoint extending `JavaPlugin`.
 
-**If you do not see the `HytaleServer` run configuration, you may need to open
-the dropdown or click `Edit Configurations...` once to unhide it.**
+---
 
-## Importing into VSCode
-While VSCode is not officially supported, you can generate launch configs by 
-running `./gradlew generateVSCodeLaunch`.
+## 🛠️ Features & Tooling Included
 
-## Connecting to Server
-Once the server is running in IDEA you should be able to connect to 
-`Local Server` using your standard Hytale client. If the server does not show
-up automatically, add the IP as `127.0.0.1` manually.
+- **Gradle Kotlin DSL**: Modern `build.gradle.kts` and `settings.gradle.kts`.
+- **Smolder Integration**: Uses `fr.smolder.hytale.dev` (v0.1.0) for game SDK classpath and automatic manifest generation.
+- **Dynamic Manifest**: No manual `manifest.json` maintenance needed; Smolder generates and updates it automatically from Gradle configuration.
+- **Asset Pipeline (`.model`)**:
+  Drop your raw assets into `.model/` and Gradle will automatically sync them into `src/main/resources/`:
+  - `*.blockymodel` -> `Common/Items/`
+  - `*.json` -> `Server/Item/Items/`
+  - `textures/*.png` -> `Common/Items/`
+  - `icons/*.png` -> `Common/Icons/ItemsGenerated/`
+- **Logo Sync (`syncLogo`)**: Place a `logo.png` in the project root to automatically generate `icon.png`, `icon-256.png`, and custom UI icons on build.
+- **Auto-Deploy to `.mods`**: Running `./gradlew jar` automatically copies the built artifact to `.mods` (if present or linked to Hytale).
+- **Unit Testing**: Pre-configured with **JUnit 5** and `HytaleLogManager`.
 
-### You MUST authenticate your test server!
-In order to connect to the test server, you must authenticate it with Hytale.
-This is done by running the `auth login device` command in the server terminal.
-This command will print a URL that you can use to authenticate the server using
-your Hytale account. Once authenticated, you can run the 
-`auth persistence Encrypted` command to keep your server authenticated after 
-restarting it. 
+---
 
-**Never share your encrypted auth file!**
+## 💻 Gradle Commands
 
-If you are unable to run commands from the IDEA terminal, you can also run the 
-command from code like this. Make sure to remove the code after your server is
-authenticated.
+- **Build jar and deploy**:
+  ```bash
+  ./gradlew jar
+  ```
+- **Run tests**:
+  ```bash
+  ./gradlew test
+  ```
+- **Sync staging models/assets**:
+  ```bash
+  ./gradlew syncModelAssets
+  ```
+- **Sync logo icon**:
+  ```bash
+  ./gradlew syncLogo
+  ```
 
-```java
-    @Override
-    protected void start() {
-        CommandManager.get().handleCommand(ConsoleSender.INSTANCE, "auth login device");
-    }
+---
+
+## 📂 Project Structure
+
+```text
+├── .hytale/                  # Directory junction to your Hytale game folder (optional)
+├── .mods/                    # Directory junction to Hytale UserData/Mods (optional)
+├── .model/                   # Asset staging folder for 3D models, textures and icons
+├── gradle/                   # Gradle wrapper
+├── src/
+│   ├── main/
+│   │   ├── java/             # Plugin source code
+│   │   └── resources/        # Plugin resources and assets
+│   └── test/
+│       └── java/             # JUnit 5 unit tests
+├── build.gradle.kts          # Build configuration & tasks
+├── gradle.properties         # Template properties & metadata
+└── settings.gradle.kts       # Repositories & project root name
 ```
-
-
-## Verifying The Example Plugin
-You can verify the Example plugin has loaded by running the `/test` command 
-in game. It will print the name and version of your plugin. This is for 
-demonstration purposes, and should **NOT** be included in your final build.
-
-The example plugin also includes a recipe defined by an asset pack. This recipe
-allows you to craft 10 dirt into 1 dirt using the crafting window. This is also
-an example and should be removed before you release the plugin.

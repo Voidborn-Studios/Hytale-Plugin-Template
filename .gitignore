@@ -7,6 +7,8 @@ build/
 
 ### Hytale ###
 run/
+.hytale/
+.mods/
 
 ### IntelliJ IDEA ###
 .idea/
@@ -41,3 +43,21 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Project Planning & Documentation ###
+docs/
+
+### Local Model Sync ###
+.model/
+
+### Self-Hosted Runner Scripts ###
+start-runner.*
+stop-runner.*
+runner-*.bat
+runner-*.vbs
+
+### Design Source Files ###
+*.af
+*.af~lock~
+*.af*~lock~
+*.psd
